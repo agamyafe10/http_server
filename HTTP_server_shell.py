@@ -31,7 +31,9 @@ def get_content_type(type):
                     "txt": "text/html;charset=utf-8",
                     "jpg": "image/jpeg",
                     "js": "text/javascript; charset=UTF-8",
-                    "css": "text/css"}
+                    "css": "text/css",
+                    "ico": "image/x-icon",
+                    "gif": "image/gif"}
     return contents[type]
 
 
@@ -80,6 +82,8 @@ def validate_http_request(request):
     """ Check if request is a valid HTTP request and returns TRUE / FALSE and the requested file name """
     # TO DO: write function
     web_root = request.decode().split(r'\r\n')[0].split(' ')[1][1:]# take the requested file name
+    if '/' in web_root:
+        web_root = web_root.replace('/', '\\')
     decoded_request = str(request.decode())# it benn received binary
 
     if decoded_request[0:3] != 'GET':
@@ -118,7 +122,7 @@ def main():
     # Open a socket and loop forever while waiting for clients
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)# defining the socket
     server_socket.bind((IP, PORT))# setting the current ip and port
-    server_socket.listen()# the time it lusten to client until closing the socket
+    server_socket.listen()# the time it listen to client until closing the socket
     print("Listening for connections on port %d" % PORT)
 
     while True:
