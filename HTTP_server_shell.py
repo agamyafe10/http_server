@@ -27,8 +27,8 @@ def get_file_data(file_root):
 
 
 def get_content_type(type):
-    contents = {"html": "text/html;charset=utf-8",
-                    "txt": "text/html;charset=utf-8",
+    contents = {"html": "text/html; charset=utf-8",
+                    "txt": "text/html; charset=utf-8",
                     "jpg": "image/jpeg",
                     "js": "text/javascript; charset=UTF-8",
                     "css": "text/css",
@@ -39,13 +39,13 @@ def get_content_type(type):
 
 def handle_client_request(file_name, client_socket):
     """ Check the required resource, generate proper HTTP response and send to client"""
-    texti = open("text.txt", 'r')
-    directory = texti.read()# get the root
-    texti.close()
+    #texti = open("text.txt", 'r')
+    #directory = texti.read()# get the root
+    #texti.close()
+    directory = 'webroot\\'
     DEFAULT_URL = directory + "index.html"
     # TO DO : add code that given a resource (URL and parameters) generates the proper response
     if file_name == '':# in case no specific file was requested
-        file_name = "index.html"
         url = DEFAULT_URL
     else:
         url = directory + file_name# generating the url
@@ -55,9 +55,9 @@ def handle_client_request(file_name, client_socket):
         print(url)
         file_type = url.split(".")[-1]
         http_header += " 200 OK\r\nContent-Length: " + str(os.path.getsize(url)) + "\r\nContent-Type: " + get_content_type(file_type) + "\r\n\r\n"
-        print(http_header)
+        #print(http_header)
         data = get_file_data(url)
-        print(data)
+        #print(data)
     # TO DO: check if URL had been redirected, not available or other error code. For example:
     # if url in REDIRECTION_DICTIONARY:
     #     # TO DO: send 302 redirection response
@@ -74,6 +74,7 @@ def handle_client_request(file_name, client_socket):
         data = data.encode()
     http_header = http_header.encode()
     http_response = http_header + data
+    print(http_response)
     client_socket.send(http_response)
 
 
@@ -105,15 +106,16 @@ def handle_client(client_socket):
 
     print('Client connected')
 
-    while True:
-        client_request = client_socket.recv(1024)# receiving the data the client sent
-        valid_http, file_name = validate_http_request(client_request)# valid the request
-        if valid_http:# the request is valid indeed
-            print('Got a valid HTTP request')
-            handle_client_request(file_name, client_socket)
-        else:
-            print('Error: Not a valid HTTP request')
-            break
+    #while True:
+    client_request = client_socket.recv(2048)# receiving the data the client sent
+    print(client_request)
+    valid_http, file_name = validate_http_request(client_request)# valid the request
+    if valid_http:# the request is valid indeed
+        print('Got a valid HTTP request')
+        handle_client_request(file_name, client_socket)
+    else:
+        print('Error: Not a valid HTTP request')
+        #break
     print('Closing connection')
     client_socket.close()
 
