@@ -39,12 +39,10 @@ def get_content_type(type):
 
 def handle_client_request(file_name, client_socket):
     """ Check the required resource, generate proper HTTP response and send to client"""
-    #texti = open("text.txt", 'r')
-    #directory = texti.read()# get the root
-    #texti.close()
+
     directory = 'webroot\\'
     DEFAULT_URL = directory + "index.html"
-    # TO DO : add code that given a resource (URL and parameters) generates the proper response
+
     if file_name == '':# in case no specific file was requested
         url = DEFAULT_URL
     else:
@@ -53,23 +51,34 @@ def handle_client_request(file_name, client_socket):
     data = ""
     if os.path.isfile(url):# if the requested file exists
         print(url)
-        file_type = url.split(".")[-1]
-        http_header += " 200 OK\r\nContent-Length: " + str(os.path.getsize(url)) + "\r\nContent-Type: " + get_content_type(file_type) + "\r\n\r\n"
-        #print(http_header)
-        data = get_file_data(url)
-        #print(data)
-    # TO DO: check if URL had been redirected, not available or other error code. For example:
-    # if url in REDIRECTION_DICTIONARY:
-    #     # TO DO: send 302 redirection response
-    #
-    # # TO DO: extract requested file tupe from URL (html, jpg etc)
-    # if filetype == 'html':
-    #     http_header = # TO DO: generate proper HTTP header
-    # elif filetype == 'jpg':
-    #     http_header = # TO DO: generate proper jpg header
-    # # TO DO: handle all other headers
+        response_dict = {"index.html": "ok",
+        "css\\doremon.css": "ok",
+        "js\\box.js": "ok",
+        "js\\jquery.min.js": "ok",
+        "js\\submit.js": "ok",
+        "imgs\\abstract.jpg": "ok",
+        "imgs\\favicon.ico": "ok",
+        "imgs\\loading.gif": "ok",
+        "ido.html": "forbidden",
+        "agam.html": "moved",
+        "noam.html": "error"}
+        if response_dict[file_name] == "ok":
+            file_type = url.split(".")[-1]
+            status = " 200 OK\r\nContent-Length: " + str(os.path.getsize(url)) + "\r\nContent-Type: " + get_content_type(file_type) + "\r\n\r\n"
+            data = get_file_data(url)
+            print(data)
+        elif response_dict[file_name] == "forbidden": 
+            status = " 403 Forbidden"
+        elif response_dict[file_name] == "moved":
+            status = " 302 Temprarily Moved\r\nLocation: index.html"
+        elif response_dict[file_name] == "error":
+            status = " 500 Internal Server Error"
 
-    # TO DO: read the data from the file
+
+        http_header += status
+        print(http_header)
+
+    # generating the response properly    
     if not isinstance(data, bytes):
         data = data.encode()
     http_header = http_header.encode()
