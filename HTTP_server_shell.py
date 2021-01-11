@@ -45,6 +45,7 @@ def handle_client_request(file_name, client_socket):
 
     if file_name == '':# in case no specific file was requested
         url = DEFAULT_URL
+        file_name = 'index.html'
     else:
         url = directory + file_name# generating the url
     http_header = "HTTP/1.1"
